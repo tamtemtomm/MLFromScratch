@@ -10,6 +10,7 @@ typedef struct LinearRegression
     int n_iters;
 
     void (*fit)(struct LinearRegression *, double **, double *, int, int);
+    double *(*predict)(struct LinearRegression *, double **, int, int);
 } LinearRegression;
 
 void fit(LinearRegression *model, double **X, double *y, int n_samples, int n_features)
@@ -55,4 +56,18 @@ void fit(LinearRegression *model, double **X, double *y, int n_samples, int n_fe
     free(gradients_w);
     free(diff);
 }
+
+double *predict(LinearRegression *model, double **X, int n_samples, int n_features)
+{
+    double *y_pred = (double *)malloc(n_samples * sizeof(double));
+
+    vec_mult(X, model->weights, y_pred, n_samples, n_features);
+    for (int i = 0; i < n_samples; i++)
+    {
+        y_pred[i] += model->bias; // Assuming bias is a single value
+    }
+
+    return y_pred;
+}
+
 #endif // LINEAR_REGRESSION_H

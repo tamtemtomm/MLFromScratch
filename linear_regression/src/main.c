@@ -20,6 +20,7 @@ LinearRegression create_model(double lr, int n_iters)
     }
 
     model.fit = fit;
+    model.predict = predict;
 
     return model;
 }
@@ -53,6 +54,14 @@ int main()
 
     LinearRegression model = create_model(LEARNING_RATE, N_ITERS);
     model.fit(&model, X, y, n_samples, n_features);
+
+
+    double* result = model.predict(&model, X, n_samples, n_features);
+    printf("RESULT\n");
+    printf("----------------------\n");
+    for (int i = 0; i < n_samples; i++){
+        printf("%f ", result[i]);
+    }
 
     // Free memory
     for (int i = 0; i < n_samples; i++) // Corrected: Free each row
