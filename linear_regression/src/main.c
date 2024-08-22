@@ -2,47 +2,63 @@
 #include <stdlib.h>
 #include "linear_regression.h"
 
-#define FEATURE_LEN 5
+#define N_SAMPLES 10
+#define N_FEATURES 5
+#define LEARNING_RATE 0.01
+#define N_ITERS 100
 
-LinearRegression create_model() {
+LinearRegression create_model(double lr, int n_iters)
+{
     LinearRegression model;
-    model.lr = 0.01;
-    model.n_iters = 100;
-    model.bias = 0;
+    model.lr = lr;
+    model.n_iters = n_iters;
+    model.bias = (double)rand() / RAND_MAX;
 
-    // Initialize weights with random values between 0 and 1
-    for (int i = 0; i < FEATURE_LEN; i++) {
+    for (int i = 0; i < N_FEATURES; i++)
+    {
         model.weights[i] = (double)rand() / RAND_MAX;
     }
 
-    // Set the fit function pointer
     model.fit = fit;
 
     return model;
 }
 
-int main() {
-    int n_samples = 10;
-    int n_features = 3;
+int main()
+{
+    int n_features = N_FEATURES;
+    int n_samples = N_SAMPLES;
 
-    // Allocate and initialize X and y
-    double* X = (double*)malloc(n_samples * n_features * sizeof(double));
-    double* y = (double*)malloc(n_samples * sizeof(double));
+    // Create a sample data with shape of [n_samples][n_features]
+    double **X = (double **)malloc(n_samples * sizeof(double *));
+    for (int i = 0; i < n_samples; i++)
+    {
+        X[i] = (double *)malloc(n_features * sizeof(double));
+    }
 
-    // Initialize X and y with some values here
+    for (int i = 0; i < N_SAMPLES; i++)
+    {
+        for (int j = 0; j < N_FEATURES; j++)
+        {
+            X[i][j] = (double)rand() / RAND_MAX;
+        }
+    }
 
-    LinearRegression model = create_model();
+    // Create a sample label
+    double *y = (double *)malloc(n_samples * sizeof(double));
+    for (int i = 0; i < N_SAMPLES; i++)
+    {
+        y[i] = (double)rand() / RAND_MAX;
+    }
+
+    LinearRegression model = create_model(LEARNING_RATE, N_ITERS);
     model.fit(&model, X, y, n_samples, n_features);
 
-    // Print results
-    printf("Learning Rate: %f\n", model.lr);
-    printf("Number of Iterations: %d\n", model.n_iters);
-    printf("Weights:\n");
-    for (int i = 0; i < n_features; i++) {
-        printf(" %f", model.weights[i]);
+    // Free memory
+    for (int i = 0; i < n_samples; i++) // Corrected: Free each row
+    {
+        free(X[i]);
     }
-    printf("\nBias: %f\n", model.bias);
-
     free(X);
     free(y);
 
