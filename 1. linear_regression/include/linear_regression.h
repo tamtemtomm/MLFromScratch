@@ -4,6 +4,8 @@
 #define LINEAR_REGRESSION_H
 
 #include "matrix.h"
+#include "stdio.h"
+
 typedef struct LinearRegression
 {
     // Initialize the members
