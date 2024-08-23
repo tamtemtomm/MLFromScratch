@@ -3,8 +3,15 @@
 
 #include <stdlib.h>
 
-void vec_mult(double **data, const double *weight, double *result, int n_samples, int n_features)
+typedef struct
 {
+    int size;
+    double data[]; // Flexible array member
+} FlexArray;
+
+// function for multiplication of data (n_samples, n_features) @ weights (n_features)
+void vec_mult(double **data, const double *weight, double *result, int n_samples, int n_features)
+{   
     for (int i = 0; i < n_samples; i++)
     {
         result[i] = 0;

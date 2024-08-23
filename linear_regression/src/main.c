@@ -2,39 +2,18 @@
 #include <stdlib.h>
 #include "linear_regression.h"
 
-#define N_SAMPLES 10
-#define N_FEATURES 5
-#define LEARNING_RATE 0.01
-#define N_ITERS 100
-
-LinearRegression create_model(double lr, int n_iters)
-{
-    LinearRegression model;
-    model.lr = lr;
-    model.n_iters = n_iters;
-    model.bias = (double)rand() / RAND_MAX;
-
-    for (int i = 0; i < N_FEATURES; i++)
-    {
-        model.weights[i] = (double)rand() / RAND_MAX;
-    }
-
-    model.fit = fit;
-    model.predict = predict;
-
-    return model;
-}
+#define N_SAMPLES 100
+#define N_FEATURES 10
+#define LEARNING_RATE 0.1
+#define N_ITERS 5000
 
 int main()
 {
-    int n_features = N_FEATURES;
-    int n_samples = N_SAMPLES;
-
-    // Create a sample data with shape of [n_samples][n_features]
-    double **X = (double **)malloc(n_samples * sizeof(double *));
-    for (int i = 0; i < n_samples; i++)
+    // Create a sample data with shape of [n_samples][N_FEATURES]
+    double **X = (double **)malloc(N_SAMPLES * sizeof(double *));
+    for (int i = 0; i < N_SAMPLES; i++)
     {
-        X[i] = (double *)malloc(n_features * sizeof(double));
+        X[i] = (double *)malloc(N_FEATURES * sizeof(double));
     }
 
     for (int i = 0; i < N_SAMPLES; i++)
@@ -46,28 +25,29 @@ int main()
     }
 
     // Create a sample label
-    double *y = (double *)malloc(n_samples * sizeof(double));
+    double *y = (double *)malloc(N_SAMPLES * sizeof(double));
     for (int i = 0; i < N_SAMPLES; i++)
     {
         y[i] = (double)rand() / RAND_MAX;
     }
 
-    LinearRegression model = create_model(LEARNING_RATE, N_ITERS);
-    model.fit(&model, X, y, n_samples, n_features);
+    LinearRegression model = create_model(LEARNING_RATE, N_ITERS, N_FEATURES);
+    model.fit(&model, X, y, N_SAMPLES, N_FEATURES);
 
-
-    double* result = model.predict(&model, X, n_samples, n_features);
-    printf("RESULT\n");
-    printf("----------------------\n");
-    for (int i = 0; i < n_samples; i++){
-        printf("%f ", result[i]);
+    double *result = model.predict(&model, X, N_SAMPLES, N_FEATURES);
+    printf("RESULT : \n");
+    for (int i = 0; i < N_SAMPLES; i++)
+    {
+        printf("%f | ", result[i]);
     }
 
     // Free memory
-    for (int i = 0; i < n_samples; i++) // Corrected: Free each row
+    for (int i = 0; i < N_SAMPLES; i++) // Corrected: Free each row
     {
         free(X[i]);
     }
+
+    free(model.weights);
     free(X);
     free(y);
 
