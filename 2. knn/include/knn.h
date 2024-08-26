@@ -7,7 +7,7 @@ typedef struct KNN
 {
     int k;
     void (*fit)(struct KNN *, double **, double *, int, int);
-    double *(*predict)(struct knn *, double **, int, int);
+    double *(*predict)(struct KNN *, double **, int, int);
 } KNN;
 
 void fit(KNN *model, double **X, double *y, int n_samples, int n_features);
