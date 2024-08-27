@@ -120,11 +120,28 @@ char **read_csv_label(char *filepath, int N_SAMPLES, int N_FEATURES)
     return y;
 }
 
-int convert_label_string_to_int(char* label_string){
-    if (strcmp(label_string, "Iris-setosa") == 0) return 0;
-    else if(strcmp(label_string, "Iris-versicolor") == 0) return 1;
-    else if(strcmp(label_string, "Iris-virginica") == 0) return 2;
-    else return -1;  // Return -1 to indicate an error if the label doesn't match
+int convert_label_string_to_int(char *label_string)
+{
+    if (strcmp(label_string, "Iris-setosa") == 0)
+        return 0;
+    else if (strcmp(label_string, "Iris-versicolor") == 0)
+        return 1;
+    else if (strcmp(label_string, "Iris-virginica") == 0)
+        return 2;
+    else
+        return -1; // Return -1 to indicate an error if the label doesn't match
+}
+
+char *convert_label_int_to_string(int label_int)
+{
+    if (label_int == 0)
+        return "Iris-setosa";
+    else if (label_int == 1)
+        return "Iris-versicolor";
+    else if (label_int == 2)
+        return "Iris-virginica";
+    else
+        return "--"; // Return -1 to indicate an error if the label doesn't match
 }
 
 #endif

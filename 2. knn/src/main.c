@@ -59,25 +59,13 @@ int main()
     // Fit the model into dataset
     model.fit(&model, X_train, y_train, train_size, N_FEATURES);
 
-    // Debug: Print the fitted model's training data
-    // for (int i = 0; i < train_size; i++)
-    // {
-    //     for (int j = 0; j < N_FEATURES; j++)
-    //     {
-    //         printf("%f|", model.X_train[i][j]);
-    //     }
-    //     printf("%d\n", model.y_train[i]);
-    // }
-
-    // double *distances = get_distances(X_test, X_train, train_size, test_size, N_FEATURES);
-
-    // for (int i = 0; i < train_size; i++)
-    // {
-    //     printf("%f|", distances[i]);
-    // }
-
     // Predict using model (implement the prediction function to use this)
-    // double *result = model.predict(&model, X_test, test_size, N_FEATURES);
+    int* results = model.predict(&model, X_test, train_size, test_size, N_FEATURES);
+
+    // Convert the int into string back
+    for (int i = 0; i < test_size; i ++){
+        printf("%s\n", convert_label_int_to_string(results[i]));
+    }
 
     return 0;
 }

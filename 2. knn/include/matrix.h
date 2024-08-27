@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <math.h>
+#include <stdlib.h>
 
 double sum(double *a, int length)
 {
@@ -14,31 +15,17 @@ double sum(double *a, int length)
     return sum;
 }
 
-double euclidian_distance(double **a, double *b, int n_samples, int n_features)
-{
-    double *diff = (double *)malloc(n_samples * sizeof(double));
-    for (int i = 0; i < n_samples; i++)
+double euclidian_distance(double *a, double *b, int n_features)
+{   
+    double sum_squared_diff = 0;
+    for (int i = 0; i < n_features; i++)
     {
-        for (int j = 0; j < n_features; j++)
-        {
-            diff[i] = pow(a[i][j] - b[j], 2);
-        }
+        double diff = a[i] - b[i];
+        sum_squared_diff += diff * diff;
     }
 
-    double summed_diff = sum(diff, n_samples);
-    double distance = sqrt(summed_diff);
+    double distance = sqrt(sum_squared_diff);
     return distance;
-}
-
-double *get_distances(double **a, double **b, int n_train_samples, int n_test_samples, int n_features)
-{
-    double *distances = (double *)malloc(n_train_samples * sizeof(double));
-    for (int i = 0; i < n_train_samples; i++)
-    {
-        distances[i] = euclidian_distance(a, b[i], n_test_samples, n_features);
-    }
-
-    return distances;
 }
 
 #endif
