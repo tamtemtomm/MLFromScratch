@@ -29,10 +29,10 @@ double **read_csv(char *filepath, int N_SAMPLES, int N_FEATURES)
         printf("Error could not open file\n");
         exit(-1);
     }
-    else
-    {
-        printf("I was able to open the file\n");
-    }
+    // else
+    // {
+    //     printf("I was able to open the file\n");
+    // }
 
     // Get the first line (Column names)
     fgets(buffer, sizeof(buffer), fileData);
@@ -82,10 +82,10 @@ char **read_csv_label(char *filepath, int N_SAMPLES, int N_FEATURES)
         printf("Error could not open file\n");
         exit(-1);
     }
-    else
-    {
-        printf("I was able to open the file\n");
-    }
+    // else
+    // {
+    //     printf("I was able to open the file\n");
+    // }
 
     // Get the first line (Column names)
     fgets(buffer, sizeof(buffer), fileData);
@@ -104,6 +104,9 @@ char **read_csv_label(char *filepath, int N_SAMPLES, int N_FEATURES)
         // Get the label
         data = strtok(NULL, ",");
 
+        // Trim any newline characters
+        data[strcspn(data, "\r\n")] = 0;
+
         // Allocate memory for the label and copy it
         y[i] = (char *)malloc(strlen(data) + 1);
         strcpy(y[i], data);
@@ -115,6 +118,13 @@ char **read_csv_label(char *filepath, int N_SAMPLES, int N_FEATURES)
     fclose(fileData);
 
     return y;
+}
+
+int convert_label_string_to_int(char* label_string){
+    if (strcmp(label_string, "Iris-setosa") == 0) return 0;
+    else if(strcmp(label_string, "Iris-versicolor") == 0) return 1;
+    else if(strcmp(label_string, "Iris-virginica") == 0) return 2;
+    else return -1;  // Return -1 to indicate an error if the label doesn't match
 }
 
 #endif
