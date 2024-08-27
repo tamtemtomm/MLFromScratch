@@ -5,6 +5,7 @@ The goal is practice my skill with C by make an inference off popular machine le
 
 ## Algorithms Implemented
 1. [Linear Regression](https://github.com/tamtemtomm/MLFromScratch/tree/main/1.%20linear_regression) : An implementation of the Linear Regression algorithm using gradient descent.
+2. [KNN(K-Nearest Neighbor)](https://github.com/tamtemtomm/MLFromScratch/tree/main/2.%20knn) :  An implementation of KNN using `Iris.csv`.
 
 ## Getting Started
 ### Prerequisites
