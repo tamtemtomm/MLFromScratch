@@ -40,6 +40,10 @@ int main()
     model.fit(&model, X, y, N_SAMPLES, N_FEATURES);
 
     // Predict using the trained model
+    int* results = model.predict(&model, X, y, N_SAMPLES, N_FEATURES);
+    for (int i = 0; i < N_SAMPLES; i++){
+        printf("%d", results[i]);
+    }
 
     // Evaluate the results
 

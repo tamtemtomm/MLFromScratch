@@ -15,7 +15,7 @@ typedef struct SVM
     double bias;
 
     void (*fit)(struct SVM *, double **, int *, int, int);
-    double *(*predict)();
+    int *(*predict)(struct SVM *, double **, int *, int, int);
 } SVM;
 
 void fit(SVM *model, double **X, int *y, int n_samples, int n_features)
@@ -25,7 +25,7 @@ void fit(SVM *model, double **X, int *y, int n_samples, int n_features)
     for (int i = 0; i < n_features; i++)
     {
         model->weights[i] = (double)rand() / RAND_MAX;
-        printf("Made%f\n",  model->weights[i]);
+        printf("Made%f\n", model->weights[i]);
     }
     model->bias = (double)rand() / RAND_MAX;
 
@@ -71,7 +71,27 @@ void fit(SVM *model, double **X, int *y, int n_samples, int n_features)
 
     printf("Completed\n");
 };
-double *predict();
+int *predict(SVM *model, double **X, int *y, int n_samples, int n_features)
+{
+    int *result = (int *)malloc(n_samples * sizeof(int));
+    for (int i = 0; i < n_samples; i++)
+    {
+        for (int j = 0; j < n_features; j++)
+        {
+            double condition = vec_dot(X[i], model->weights, n_features) - model->bias;
+            if (condition < 0)
+            {
+                result[i] = -1;
+            }
+            else
+            {
+                result[i] = 1;
+            }
+        }
+    }
+
+    return result;
+};
 
 SVM create_model(double lambda, double lr, int n_iters)
 {
@@ -81,7 +101,7 @@ SVM create_model(double lambda, double lr, int n_iters)
     model.n_iters = n_iters;
 
     model.fit = fit;
-    // model.predict = predict;
+    model.predict = predict;
 
     printf("Model initialized!\n");
 
