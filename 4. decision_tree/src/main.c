@@ -38,7 +38,7 @@ int main()
 
     // Initializes model
     DecisionTree model = create_model(MAX_DEPTH, MIN_SAMPLES_SPLIT);
-    model._most_common_label(&model, y, N_SAMPLES);
+    model._entropy(&model, y, N_SAMPLES);
 
     // Fit the model into the dataset
     // model.fit(@model, X_train, y_train, N_SAMPLES, N_FEATURES);
