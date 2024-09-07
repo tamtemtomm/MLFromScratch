@@ -10,6 +10,7 @@ typedef struct DecisionTree
 {
     int max_depth;
     int min_samples_split;
+    Node tree;
     // int tree;
 
     void (*fit)(struct DecisionTree *, double **, int *, int, int);
@@ -26,6 +27,7 @@ typedef struct DecisionTree
 
 void fit(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 {
+    model->tree = model->_grow_tree(model, X, y, 0, n_samples, n_features);
 }
 
 int *predict(DecisionTree *model, double **X, int n_samples, int n_features)
@@ -51,39 +53,94 @@ Node _grow_tree(DecisionTree *model, double **X, int *y, int depth, int n_sample
     if (depth >= model->max_depth || unique_features_len == 1 || n_samples < model->min_samples_split)
     {
         int leaf_value = model->_most_common_label(model, y, n_samples);
-        return create_node(leaf_value);
+        return create_node_by_value(leaf_value);
     }
 
     // Find the best split
+    DecisionSplit best_split = model->_best_split(model, X, y, n_samples, n_features);
+
+    Node left_tree = model->_grow_tree(model, best_split.X_left, best_split.y_left, depth + 1, best_split.left_len, n_features);
+    Node right_tree = model->_grow_tree(model, best_split.X_right, best_split.y_right, depth + 1, best_split.right_len, n_features);
+
+    return create_node(best_split.feature_index, best_split.threshold, &left_tree, &right_tree);
 }
 
 DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 {
-    double max_gain = -(double)INFINITY;
-    DecisionSplit split;
+    double best_gain = -(double)INFINITY;
+    DecisionSplit split = {0};
 
     for (int feature_index = 0; feature_index < n_features; feature_index++)
     {
         double *X_column = vec_at_column(X, feature_index, n_samples);
 
         int threshold_len = n_samples;
-        double *threshold = vec_unique_double(X_column, &threshold_len);
+        double *thresholds = vec_unique_double(X_column, &threshold_len);
 
         for (int threshold_index = 0; threshold_index < threshold_len; threshold_index++)
         {
-            // printf("%f\n", threshold[threshold_index]);
-            // printf("%f\n", threshold_len);
 
-            double gain = model->_information_gain(model, y, X_column, threshold[threshold_index], n_samples);
-            // printf("%f\n", gain);
+            double gain = model->_information_gain(model, y, X_column, thresholds[threshold_index], n_samples);
+            if (gain > best_gain)
+            {
+                best_gain = gain;
+                double **X_left = (double **)malloc(n_samples * sizeof(double *));
+                double **X_right = (double **)malloc(n_samples * sizeof(double *));
+                for (int i = 0; i < n_samples; i++)
+                {
+                    X_left[i] = (double *)malloc(n_samples * sizeof(double));
+                    X_right[i] = (double *)malloc(n_samples * sizeof(double));
+                }
+    
+                int *y_left = (int *)malloc(n_samples * sizeof(int));
+                int *y_right = (int *)malloc(n_samples * sizeof(int));
+
+                int left_values_len = 0, right_values_len = 0; // Initialize these correctly
+
+                for (int i = 0; i < n_samples; i++)
+                {
+                    if (X_column[i] <= thresholds[threshold_index])
+                    {
+                        X_left[left_values_len] = X[i];
+                        y_left[left_values_len] = y[i];
+                        left_values_len++;
+                    }
+                    else
+                    {
+                        X_right[right_values_len] = X[i];
+                        y_right[right_values_len] = y[i];
+                        right_values_len++;
+                    }
+                }
+
+                double **X_left = (double **)realloc(X_left, left_values_len * sizeof(double *));
+                int *y_left = (int *)realloc(y_left, left_values_len * sizeof(int));
+                double **X_right = (double **)realloc(X_right, right_values_len * sizeof(double *));
+                int *y_right = (int *)realloc(y_right, right_values_len * sizeof(int));
+
+                split.feature_index = feature_index;
+                split.threshold = thresholds[threshold_index];
+
+                split.left_len = left_values_len;
+                split.right_len = right_values_len;
+
+                split.X_left = X_left;
+                split.X_right = X_right;
+                split.y_left = y_left;
+                split.y_right = y_right;
+            }
         }
+        free(thresholds);
+        free(X_column);
     }
+
+    return split;
 }
 
 double _information_gain(DecisionTree *model, int *y, double *X_column, double threshold, int n_samples)
 {
     printf("Calculating information gain for threshold %f\n", threshold);
-    
+
     double parent_entropy = model->_entropy(model, y, n_samples);
 
     int *left_values = (int *)malloc(n_samples * sizeof(int));
