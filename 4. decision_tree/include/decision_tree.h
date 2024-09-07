@@ -22,6 +22,7 @@ typedef struct DecisionTree
     double (*_information_gain)(struct DecisionTree *, int *, double *, double, int);
     double (*_entropy)(struct DecisionTree *, int *, int len);
     int (*_most_common_label)(struct DecisionTree *, int *, int);
+    int (*_traverse_tree)(struct DecisionTree *, double *, Node *);
 
 } DecisionTree;
 
@@ -32,38 +33,49 @@ void fit(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 
 int *predict(DecisionTree *model, double **X, int n_samples, int n_features)
 {
+    int* y_pred = (int*)malloc(n_samples * sizeof(int));
+    if (!y_pred) {
+        perror("Failed to allocate memory for predictions");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < n_samples; i++){
+        printf("Predicting sample %d\n", i);
+        y_pred[i] = model->_traverse_tree(model, X[i], &model->tree);
+        printf("Sample %d: Prediction: %d\n", i, y_pred[i]);
+    }
+
+    return y_pred;
 }
+
 
 Node _grow_tree(DecisionTree *model, double **X, int *y, int depth, int n_samples, int n_features)
 {
+    printf("Growing tree at depth %d with %d samples\n", depth, n_samples);
 
     // Get unique labels-----------------------------------------
     int unique_features_len = n_samples;
     int *unique_features = vec_unique(y, &unique_features_len);
 
-    // DEBUG
-    // printf("DEBUG-----\n");
-    // for (int i = 0; i < unique_features_len; i++)
-    // {
-    //     printf("%d\n", n_unique_features);
-    //     printf("Unique %d : %d\n", i, unique_features[i]);
-    // }
-
     // Stopping criteria
     if (depth >= model->max_depth || unique_features_len == 1 || n_samples < model->min_samples_split)
     {
         int leaf_value = model->_most_common_label(model, y, n_samples);
+        printf("Creating leaf node with value %d\n", leaf_value);
         return create_node_by_value(leaf_value);
     }
 
     // Find the best split
     DecisionSplit best_split = model->_best_split(model, X, y, n_samples, n_features);
 
+    printf("Best split: Feature %d, Threshold %d\n", best_split.feature_index, best_split.threshold);
+
     Node left_tree = model->_grow_tree(model, best_split.X_left, best_split.y_left, depth + 1, best_split.left_len, n_features);
     Node right_tree = model->_grow_tree(model, best_split.X_right, best_split.y_right, depth + 1, best_split.right_len, n_features);
 
     return create_node(best_split.feature_index, best_split.threshold, &left_tree, &right_tree);
 }
+
 
 DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 {
@@ -79,35 +91,29 @@ DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples
 
         for (int threshold_index = 0; threshold_index < threshold_len; threshold_index++)
         {
-
             double gain = model->_information_gain(model, y, X_column, thresholds[threshold_index], n_samples);
             if (gain > best_gain)
             {
                 best_gain = gain;
+
                 double **X_left = (double **)malloc(n_samples * sizeof(double *));
                 double **X_right = (double **)malloc(n_samples * sizeof(double *));
-                for (int i = 0; i < n_samples; i++)
-                {
-                    X_left[i] = (double *)malloc(n_samples * sizeof(double));
-                    X_right[i] = (double *)malloc(n_samples * sizeof(double));
-                }
-    
                 int *y_left = (int *)malloc(n_samples * sizeof(int));
                 int *y_right = (int *)malloc(n_samples * sizeof(int));
 
-                int left_values_len = 0, right_values_len = 0; // Initialize these correctly
+                int left_values_len = 0, right_values_len = 0;
 
                 for (int i = 0; i < n_samples; i++)
                 {
                     if (X_column[i] <= thresholds[threshold_index])
                     {
-                        X_left[left_values_len] = X[i];
+                        X_left[left_values_len] = X[i]; // Copy pointer, not data
                         y_left[left_values_len] = y[i];
                         left_values_len++;
                     }
                     else
                     {
-                        X_right[right_values_len] = X[i];
+                        X_right[right_values_len] = X[i]; // Copy pointer, not data
                         y_right[right_values_len] = y[i];
                         right_values_len++;
                     }
@@ -120,10 +126,8 @@ DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples
 
                 split.feature_index = feature_index;
                 split.threshold = thresholds[threshold_index];
-
                 split.left_len = left_values_len;
                 split.right_len = right_values_len;
-
                 split.X_left = X_left;
                 split.X_right = X_right;
                 split.y_left = y_left;
@@ -215,16 +219,42 @@ int _most_common_label(DecisionTree *model, int *y, int n_samples)
     int *bincount = vec_bincount(y, n_samples, &bincount_len);
     int argmax = vec_argmax(bincount, bincount_len);
 
-    // DEBUG
-    printf("DEBUG-----\n");
-    for (int i = 0; i < bincount_len; i++)
-    {
-        printf("count : %d\n", bincount[i]);
-    }
-    printf("%d\n", argmax);
+    // // DEBUG
+    // printf("DEBUG-----\n");
+    // for (int i = 0; i < bincount_len; i++)
+    // {
+    //     printf("count : %d\n", bincount[i]);
+    // }
+    // printf("%d\n", argmax);
 
     return argmax;
 }
+
+int _traverse_tree(DecisionTree *model, double *X_row, Node *tree)
+{
+    if (tree == NULL) {
+        printf("Error: Null tree node encountered during traversal.\n");
+        return -1; // or some error code
+    }
+
+    if (tree->is_leaf_node(tree))
+    {
+        printf("Reached leaf node with value %d\n", tree->value);
+        return tree->value;
+    }
+
+    printf("Traversing node: Feature %d, Threshold %d\n", tree->feature_index, tree->threshold);
+
+    if (X_row[tree->feature_index] <= tree->threshold)
+    {
+        return model->_traverse_tree(model, X_row, tree->left_tree);
+    }
+    else
+    {
+        return model->_traverse_tree(model, X_row, tree->right_tree);
+    }
+}
+
 
 DecisionTree create_model(int max_depth, int min_samples_split)
 {
@@ -241,6 +271,7 @@ DecisionTree create_model(int max_depth, int min_samples_split)
     model._information_gain = _information_gain;
     model._entropy = _entropy;
     model._most_common_label = _most_common_label;
+    model._traverse_tree = _traverse_tree;
 
     return model;
 }
