@@ -18,7 +18,7 @@ typedef struct DecisionTree
     Node (*_grow_tree)(struct DecisionTree *, double **, int *, int, int, int);
     DecisionSplit (*_best_split)(struct DecisionTree *, double **, int *, int, int);
 
-    double (*_information_gain)(struct DecisionTree *, int *, double *, double *);
+    double (*_information_gain)(struct DecisionTree *, int *, double *, double, int);
     double (*_entropy)(struct DecisionTree *, int *, int len);
     int (*_most_common_label)(struct DecisionTree *, int *, int);
 
@@ -59,7 +59,7 @@ Node _grow_tree(DecisionTree *model, double **X, int *y, int depth, int n_sample
 
 DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 {
-    double gain = -(double)INFINITY;
+    double max_gain = -(double)INFINITY;
     DecisionSplit split;
 
     for (int feature_index = 0; feature_index < n_features; feature_index++)
@@ -69,23 +69,78 @@ DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples
         int threshold_len = n_samples;
         double *threshold = vec_unique_double(X_column, &threshold_len);
 
-        for (int j = 0; j < threshold_len; j++)
+        for (int threshold_index = 0; threshold_index < threshold_len; threshold_index++)
         {
-            // double gain = model->_information_gain(model, y, X_column, threshold);
+            // printf("%f\n", threshold[threshold_index]);
+            // printf("%f\n", threshold_len);
+
+            double gain = model->_information_gain(model, y, X_column, threshold[threshold_index], n_samples);
+            // printf("%f\n", gain);
         }
     }
 }
 
-double _information_gain(DecisionTree *model, int *y, double *X_column, double *threshold)
+double _information_gain(DecisionTree *model, int *y, double *X_column, double threshold, int n_samples)
 {
+    printf("Calculating information gain for threshold %f\n", threshold);
+    
+    double parent_entropy = model->_entropy(model, y, n_samples);
+
+    int *left_values = (int *)malloc(n_samples * sizeof(int));
+    int *right_values = (int *)malloc(n_samples * sizeof(int));
+    int left_values_len = 0, right_values_len = 0; // Initialize these correctly
+
+    for (int i = 0; i < n_samples; i++)
+    {
+        if (X_column[i] <= threshold)
+        {
+            left_values[left_values_len] = y[i];
+            left_values_len++;
+        }
+        else
+        {
+            right_values[right_values_len] = y[i];
+            right_values_len++;
+        }
+    }
+
+    if (left_values_len == 0.0f || right_values_len == 0.0f || left_values_len == -0.0f || right_values_len == -0.0f)
+    {
+        printf("No split occurred, returning gain = 0\n");
+        return 0.0;
+    }
+
+    double left_entropy = model->_entropy(model, left_values, left_values_len);
+    double right_entropy = model->_entropy(model, right_values, right_values_len);
+
+    double child_entropy = (((double)left_values_len / n_samples) * left_entropy) +
+                           (((double)right_values_len / n_samples) * right_entropy);
+
+    double ig = parent_entropy - child_entropy;
+    printf("Parent entropy: %f, Left entropy: %f, Right entropy: %f, Information Gain: %f\n", parent_entropy, left_entropy, right_entropy, ig);
+
+    free(left_values);
+    free(right_values);
+    return ig;
 }
+
 double _entropy(DecisionTree *model, int *y, int len)
 {
     int bincount_len = len;
     int *bincount = vec_bincount(y, len, &bincount_len);
-    double *proportion = vec_divide_int(bincount, bincount_len, len);
+    double *proportions = vec_divide_int(bincount, bincount_len, len);
 
-    
+    double sum = 0.0;
+    for (int i = 0; i < bincount_len; i++)
+    {
+        // printf("%d\n", bincount[i]);
+        // printf("%f\n", log2f(proportions[i]));
+        if (proportions[i] > 0)
+        {
+            sum += proportions[i] * log2f(proportions[i]);
+        }
+    }
+
     // DEBUG
     // printf("DEBUG------\n");
     // for (int i = 0; i < bincount_len; i++)
@@ -93,6 +148,8 @@ double _entropy(DecisionTree *model, int *y, int len)
     //     printf("%d\n", bincount[i]);
     //     printf("%f\n", proportion[i]);
     // }
+
+    return -sum;
 }
 
 int _most_common_label(DecisionTree *model, int *y, int n_samples)

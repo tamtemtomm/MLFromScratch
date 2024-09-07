@@ -15,8 +15,8 @@ int main()
     double **X = (double **)malloc(N_SAMPLES * sizeof(double *));
     for (int i = 0; i < N_SAMPLES; i++)
     {
-        X[i] = (double *)malloc(N_SAMPLES * sizeof(double));
-        for (int j = 0; j < N_SAMPLES; j++)
+        X[i] = (double *)malloc(N_FEATURES * sizeof(double));
+        for (int j = 0; j < N_FEATURES; j++)
         {
             X[i][j] = (double)rand() / RAND_MAX;
             // printf("DEBUG------------\n");
@@ -38,7 +38,7 @@ int main()
 
     // Initializes model
     DecisionTree model = create_model(MAX_DEPTH, MIN_SAMPLES_SPLIT);
-    model._entropy(&model, y, N_SAMPLES);
+    model._best_split(&model, X, y, N_SAMPLES, N_FEATURES);
 
     // Fit the model into the dataset
     // model.fit(@model, X_train, y_train, N_SAMPLES, N_FEATURES);
