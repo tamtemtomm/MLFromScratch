@@ -28,7 +28,7 @@ int main()
     int *y = (int *)malloc(N_SAMPLES * sizeof(int));
     for (int i = 0; i < N_SAMPLES; i++)
     {
-        y[i] = (rand() % 2); // Generates 1 or 0
+        y[i] = (rand() % 3); // Generates 1 or 0
 
         // printf("DEBUG------------\n");
         // printf("%d\n", y[i]);

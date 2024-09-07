@@ -11,7 +11,7 @@ typedef struct DecisionSplit
 
     double **X_left;
     int *y_left;
-    double *X_right;
+    double **X_right;
     int *y_right;
 
 } DecisionSplit;
@@ -36,7 +36,7 @@ Node create_node_by_value(int value)
     return node;
 }
 
-Node create_node(int feature_index, int threshold, DecisionSplit *left_tree, DecisionSplit *right_tree)
+Node create_node(int feature_index, int threshold, Node *left_tree, Node *right_tree)
 {
     Node node;
 

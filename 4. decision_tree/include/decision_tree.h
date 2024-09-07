@@ -113,10 +113,10 @@ DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples
                     }
                 }
 
-                double **X_left = (double **)realloc(X_left, left_values_len * sizeof(double *));
-                int *y_left = (int *)realloc(y_left, left_values_len * sizeof(int));
-                double **X_right = (double **)realloc(X_right, right_values_len * sizeof(double *));
-                int *y_right = (int *)realloc(y_right, right_values_len * sizeof(int));
+                X_left = (double **)realloc(X_left, left_values_len * sizeof(double *));
+                y_left = (int *)realloc(y_left, left_values_len * sizeof(int));
+                X_right = (double **)realloc(X_right, right_values_len * sizeof(double *));
+                y_right = (int *)realloc(y_right, right_values_len * sizeof(int));
 
                 split.feature_index = feature_index;
                 split.threshold = thresholds[threshold_index];
