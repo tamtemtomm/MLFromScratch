@@ -27,6 +27,7 @@ typedef struct DecisionTree
 
 void fit(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 {
+    printf("HAHAHA");
     model->tree = model->_grow_tree(model, X, y, 0, n_samples, n_features);
 }
 
@@ -62,7 +63,7 @@ Node _grow_tree(DecisionTree *model, double **X, int *y, int depth, int n_sample
     {
         int leaf_value = model->_most_common_label(model, y, n_samples);
         printf("Creating leaf node with value %d\n", leaf_value);
-        return create_node_by_value(leaf_value);
+        return create_leaf_node(leaf_value);
     }
 
     // Find the best split

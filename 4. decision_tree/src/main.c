@@ -5,8 +5,8 @@
 
 #define N_SAMPLES 10  // Use a small number of samples for debugging
 #define N_FEATURES 2  // Use a small number of features for debugging
-#define MAX_DEPTH 3
-#define MIN_SAMPLES_SPLIT 2
+#define MAX_DEPTH 10
+#define MIN_SAMPLES_SPLIT 1
 #define TEST_SIZE 0.15
 
 int main()
