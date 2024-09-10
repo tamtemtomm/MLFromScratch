@@ -11,7 +11,6 @@ typedef struct DecisionTree
     int max_depth;
     int min_samples_split;
     Node tree;
-    // int tree;
 
     void (*fit)(struct DecisionTree *, double **, int *, int, int);
     int *(*predict)(struct DecisionTree *, double **, int, int);
@@ -33,13 +32,15 @@ void fit(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 
 int *predict(DecisionTree *model, double **X, int n_samples, int n_features)
 {
-    int* y_pred = (int*)malloc(n_samples * sizeof(int));
-    if (!y_pred) {
+    int *y_pred = (int *)malloc(n_samples * sizeof(int));
+    if (!y_pred)
+    {
         perror("Failed to allocate memory for predictions");
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < n_samples; i++){
+    for (int i = 0; i < n_samples; i++)
+    {
         printf("Predicting sample %d\n", i);
         y_pred[i] = model->_traverse_tree(model, X[i], &model->tree);
         printf("Sample %d: Prediction: %d\n", i, y_pred[i]);
@@ -47,7 +48,6 @@ int *predict(DecisionTree *model, double **X, int n_samples, int n_features)
 
     return y_pred;
 }
-
 
 Node _grow_tree(DecisionTree *model, double **X, int *y, int depth, int n_samples, int n_features)
 {
@@ -75,7 +75,6 @@ Node _grow_tree(DecisionTree *model, double **X, int *y, int depth, int n_sample
 
     return create_node(best_split.feature_index, best_split.threshold, &left_tree, &right_tree);
 }
-
 
 DecisionSplit _best_split(DecisionTree *model, double **X, int *y, int n_samples, int n_features)
 {
@@ -232,7 +231,8 @@ int _most_common_label(DecisionTree *model, int *y, int n_samples)
 
 int _traverse_tree(DecisionTree *model, double *X_row, Node *tree)
 {
-    if (tree == NULL) {
+    if (tree == NULL)
+    {
         printf("Error: Null tree node encountered during traversal.\n");
         return -1; // or some error code
     }
@@ -255,7 +255,6 @@ int _traverse_tree(DecisionTree *model, double *X_row, Node *tree)
     }
 }
 
-
 DecisionTree create_model(int max_depth, int min_samples_split)
 {
     DecisionTree model;
@@ -274,6 +273,5 @@ DecisionTree create_model(int max_depth, int min_samples_split)
     model._traverse_tree = _traverse_tree;
 
     return model;
-}
-
+};
 #endif

@@ -8,6 +8,7 @@
 #define MAX_DEPTH 3
 #define MIN_SAMPLES_SPLIT 2
 #define TEST_SIZE 0.15
+
 int main()
 {
     // Fixed features
@@ -39,18 +40,18 @@ int main()
     printf("Tree Structure:\n");
     print_tree(&model.tree, 0);
 
-    // Predict using the model
-    int *y_pred = model.predict(&model, X, N_SAMPLES, N_FEATURES);
+    // // Predict using the model
+    // int *y_pred = model.predict(&model, X, N_SAMPLES, N_FEATURES);
 
-    // Print predictions
-    printf("Predictions:\n");
-    for (int i = 0; i < N_SAMPLES; i++)
-    {
-        printf("Sample %d: Prediction: %d\n", i, y_pred[i]);
-    }
+    // // Print predictions
+    // printf("Predictions:\n");
+    // for (int i = 0; i < N_SAMPLES; i++)
+    // {
+    //     printf("Sample %d: Prediction: %d\n", i, y_pred[i]);
+    // }
 
-    // Free allocated memory
-    free(y_pred);
+    // // Free allocated memory
+    // free(y_pred);
 
     return 0;
 }
