@@ -1,75 +1,63 @@
-# 🧠 Regression Model from Scratch (C Implementation)
+# 🧠 Machine Learning From Scratch (in C)
 
-This project demonstrates a simple machine learning regression model (likely linear regression) implemented from scratch in C. It includes the entire training process, including loss computation and iterative parameter updates.
+Welcome to **Machine Learning From Scratch**, a collection of machine learning algorithms implemented entirely in **C**. This project is focused on understanding the inner workings of ML models by building them from the ground up — no external libraries, just pure C.
 
-## 📊 Overview
+## 📚 Implemented Models
 
-The goal of this project is to perform supervised learning using a regression model, minimizing a loss function over multiple epochs. The training process logs the loss at each epoch, allowing you to monitor convergence.
+| Model               | Description                          | Status      |
+|--------------------|--------------------------------------|-------------|
+| 🧮 Linear Regression | Predict continuous values            | ✅ Completed |
+| 📍 K-Nearest Neighbors | Classification via proximity       | 🚧 In Progress |
+| 📐 Support Vector Machine | Max-margin classifier           | 🚧 In Progress |
+| 🌳 Decision Tree     | Rule-based classification/regression | 🧪 Planned    |
 
-Example loss log:
+> ✅ = Implemented, 🚧 = In Progress, 🧪 = Planned
 
-```
-Epoch 166, Loss: 380071359147.870420  
-Epoch 250, Loss: 378227187076.111330  
-Epoch 300, Loss: 377954420798.215760  
-Epoch 350, Loss: 377848839939.072880  
-...
-```
-
-## 📁 Project Structure
+## 🗂️ Repository Structure
 
 ```
-regression/
-├── main.c               # Entry point and training loop
-├── model.c              # Model definition and update logic
-├── model.h              # Header for model functions
-├── data.csv             # Training data (if used)
-├── Makefile             # Build configuration
-└── README.md            # Project documentation
+MLFromScratch/
+├── src/
+    ├── linear_regression/   # Linear Regression implementation
+    ├── knn/                 # K-Nearest Neighbors implementation
+    ├── svm/                 # Support Vector Machine implementation
+    ├── decision_tree/       # Decision Tree implementation
+    ├── utils/
+        ├── cnumpy/ # 2D numpy implementation
+        ├── csv/ & Module to open the csv file 
+└── main.c
+└── README.md            # This file
 ```
 
-## ⚙️ How It Works
+Each folder contains:
 
-1. **Model Initialization**: Model parameters (weights, bias) are initialized.
-2. **Forward Pass**: Predictions are made based on input features.
-3. **Loss Calculation**: The Mean Squared Error (MSE) loss is computed.
-4. **Backward Pass (Gradient Descent)**: Weights are updated to reduce the loss.
-5. **Logging**: Loss is printed at each epoch to track convergence.
+- `main.c` – Program entry point and demo
+- `model.c/.h` – Model logic and functions
+- `README.md` – Model-specific documentation
 
-## 📌 Dependencies
+## 🏃‍♂️ How to Run
 
-No external libraries are required. The project is written in standard C and uses `stdio.h` and `stdlib.h`.
+Change the model in main.c file and Run the main.c file:
 
-## 🏁 How to Run
-
-1. Compile the program:
-   ```bash
-   make
-   ```
-
-2. Run the executable:
-   ```bash
-   ./regression
-   ```
-
-## ✅ Example Output
-
-```
-Epoch 1, Loss: 4.5e+11  
-Epoch 100, Loss: 3.8e+11  
-Epoch 300, Loss: 3.7e+11  
-...
+```bash
+./build.bat
 ```
 
-This decreasing trend in loss suggests the model is learning effectively.
+## 🎯 Goals
 
-## 📈 Future Improvements
+- Learn and teach the fundamentals of ML by implementing core ideas in a low-level language.
+- Keep each implementation readable and modular.
+- Avoid using libraries like NumPy or scikit-learn — everything is handcrafted.
 
-- Add support for multiple features (multivariate regression)
-- Visualize loss curve with a script (e.g., Python + matplotlib)
-- Normalize input features for better convergence
-- Implement model evaluation (e.g., RMSE, MAE)
+## 🧪 Testing & Datasets
 
-## 👨‍💻 Author
+Minimal datasets are embedded or loaded from simple `.csv` files. You are encouraged to add your own and test model behavior.
 
-Timo Widyanvolta
+## 🙋‍♂️ Author
+
+**Timo Widyanvolta**  
+Learning, building, and exploring ML fundamentals — one line of C at a time.
+
+---
+
+Feel free to ⭐ star the repo if you like the idea or want to follow the journey!
