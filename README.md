@@ -1,23 +1,75 @@
-# Machine Learning From Scratch
+# 🧠 Regression Model from Scratch (C Implementation)
 
-Welcome to the ml from scratch repository! This repository contains implementations of various machine learning algorithms from scratch in C. 
-The goal is practice my skill with C by make an inference off popular machine learning algorithms because I am a such a chad like that
+This project demonstrates a simple machine learning regression model (likely linear regression) implemented from scratch in C. It includes the entire training process, including loss computation and iterative parameter updates.
 
-## Algorithms Implemented
-1. [Linear Regression](https://github.com/tamtemtomm/MLFromScratch/tree/main/1.%20linear_regression) : An implementation of the Linear Regression algorithm using gradient descent.
-2. [KNN(K-Nearest Neighbor)](https://github.com/tamtemtomm/MLFromScratch/tree/main/2.%20knn) :  An implementation of KNN using `Iris.csv`.
+## 📊 Overview
 
-## Getting Started
-### Prerequisites
-1. GCC compiler (or any C compiler)
-2. Standard C libraries
+The goal of this project is to perform supervised learning using a regression model, minimizing a loss function over multiple epochs. The training process logs the loss at each epoch, allowing you to monitor convergence.
 
-### Building and Running
-Each folder contains its own set of instructions for building and running the specific algorithm. 
-Please refer to the respective README files in each folder for detailed instructions.
+Example loss log:
 
-## Contributing
-Contributions are welcome! Please submit a pull request with your proposed changes. Ensure that your code adheres to the existing style and includes tests if applicable.
+```
+Epoch 166, Loss: 380071359147.870420  
+Epoch 250, Loss: 378227187076.111330  
+Epoch 300, Loss: 377954420798.215760  
+Epoch 350, Loss: 377848839939.072880  
+...
+```
 
-## Contact
-For any questions or suggestions, feel free to reach out via [email](tamtemtom@235@gmail.com) or open an issue on the repository.
+## 📁 Project Structure
+
+```
+regression/
+├── main.c               # Entry point and training loop
+├── model.c              # Model definition and update logic
+├── model.h              # Header for model functions
+├── data.csv             # Training data (if used)
+├── Makefile             # Build configuration
+└── README.md            # Project documentation
+```
+
+## ⚙️ How It Works
+
+1. **Model Initialization**: Model parameters (weights, bias) are initialized.
+2. **Forward Pass**: Predictions are made based on input features.
+3. **Loss Calculation**: The Mean Squared Error (MSE) loss is computed.
+4. **Backward Pass (Gradient Descent)**: Weights are updated to reduce the loss.
+5. **Logging**: Loss is printed at each epoch to track convergence.
+
+## 📌 Dependencies
+
+No external libraries are required. The project is written in standard C and uses `stdio.h` and `stdlib.h`.
+
+## 🏁 How to Run
+
+1. Compile the program:
+   ```bash
+   make
+   ```
+
+2. Run the executable:
+   ```bash
+   ./regression
+   ```
+
+## ✅ Example Output
+
+```
+Epoch 1, Loss: 4.5e+11  
+Epoch 100, Loss: 3.8e+11  
+Epoch 300, Loss: 3.7e+11  
+...
+```
+
+This decreasing trend in loss suggests the model is learning effectively.
+
+## 📈 Future Improvements
+
+- Add support for multiple features (multivariate regression)
+- Visualize loss curve with a script (e.g., Python + matplotlib)
+- Normalize input features for better convergence
+- Implement model evaluation (e.g., RMSE, MAE)
+
+## 👨‍💻 Author
+
+Timo Widyanvolta

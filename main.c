@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "./src/linear_regression/linear_regression.h"
 
 int main()
