@@ -1,5 +1,6 @@
 #include "cnumpy.h"
 
+
 // MATRIX ERROR
 // ---------------------------------------------------------
 void matrix_dimension_mismatch(Matrix *mat_a, Matrix *mat_b)
@@ -105,6 +106,29 @@ double matrix_max(Matrix *mat)
 
     return max;
 }
+
+int* matrix_max_idx(Matrix *mat){
+    double max = -INFINITY;
+    double cur_value;
+    int *res = malloc(2 * sizeof(int));
+    res[0] = 0;
+    res[1] = 0;
+
+
+    for (int i = 0; i < mat->rows; i++){
+        for (int j = 0; j < mat->cols; j++){
+            cur_value = matrix_get_row_col(mat, i, j);
+            if (cur_value > max){
+                max = cur_value;
+                res[0] = i;
+                res[1] = j;
+            }
+        }
+    }
+
+    return res;
+}
+
 double matrix_min(Matrix *mat)
 {
     double min = INFINITY;
@@ -121,6 +145,27 @@ double matrix_min(Matrix *mat)
     }
 
     return min;
+}
+
+int * matrix_min_idx(Matrix *mat){
+    double min = INFINITY;
+    double cur_value;
+    int *res = malloc(2 * sizeof(int));
+    res[0] = 0;
+    res[1] = 0;
+
+    for (int i = 0; i < mat->rows; i++){
+        for (int j = 0; j < mat->cols; j++){
+            cur_value = matrix_get_row_col(mat, i, j);
+            if( cur_value < min){
+                min = cur_value;
+                res[0] = i;
+                res[1] = j;
+            }
+        }
+    }
+
+    return res;
 }
 
 // MATRIX SET DATA
@@ -168,7 +213,7 @@ double matrix_get_row_col(Matrix *mat, int row, int col)
 }
 Matrix matrix_get_row(Matrix *mat, int row)
 {
-    if (row < 0 || row >= mat->cols)
+    if (row < 0 || row >= mat->rows)
     {
         fprintf(stderr, "Error : Row index out of bounds\n");
         exit(EXIT_FAILURE);
@@ -492,7 +537,7 @@ Matrix matrix_sigmoid(Matrix *mat)
             matrix_set(&new_mat, i, j,
                        1 / (1 + pow(EULER_NUMBER, -matrix_get_row_col(mat, i, j))));
         }
-    }
+    }   
 
     return new_mat;
 }
@@ -731,7 +776,6 @@ double matrix_mse(Matrix *mat_a, Matrix *mat_b)
 
     return sum / (mat_a->rows * mat_b->cols);
 }
-
 void matrix_standardize(Matrix *mat)
 {
     for (int j = 0; j < mat->cols; j++)
@@ -757,4 +801,58 @@ void matrix_standardize(Matrix *mat)
             matrix_set(mat, i, j, val);
         }
     }
+}
+
+// MATRIX DISTANCE OPERATION
+// ---------------------------------------------------------
+double matrix_euclidian_distance(Matrix* a, Matrix*b){
+    double sum = 0.0;
+    if (a->rows != b->rows || a->cols != b->cols)
+    {
+        matrix_dimension_mismatch(a, b);
+    }
+
+    for (int i = 0; i < a->rows; i++){
+        for (int j = 0; j < a->cols; j++){
+            double diff = matrix_get_row_col(a, i, j) - matrix_get_row_col(b , i, j);
+            sum += diff * diff;
+        }
+    }
+
+    return sqrt(sum);
+}
+
+bool is_close(double a, double b){
+    return fabs(a - b) < 1e-9;
+}
+
+int matrix_unique(Matrix *mat) {
+    int count = 0;
+    int capacity = 16;
+    double *seen = malloc(capacity * sizeof(double));
+
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            double val = matrix_get_row_col(mat, i, j);
+            bool found = false;
+
+            for (int k = 0; k < count; k++) {
+                if (is_close(val, seen[k])) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                if (count >= capacity) {
+                    capacity *= 2;
+                    seen = realloc(seen, capacity * sizeof(double));
+                }
+                seen[count++] = val;
+            }
+        }
+    }
+
+    free(seen);
+    return count;
 }

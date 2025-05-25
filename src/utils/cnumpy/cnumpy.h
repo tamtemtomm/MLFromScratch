@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define EULER_NUMBER 2.71828182846
 
@@ -32,7 +33,9 @@ Matrix matrix_random(int rows, int cols);
 void matrix_free(Matrix *mat);
 void matrix_print(Matrix *mat);
 double matrix_max(Matrix *mat);
+int* matrix_max_idx(Matrix *mat);
 double matrix_min(Matrix *mat);
+int* matrix_min_idx(Matrix *mat);
 
 // MATRIX SET DATA
 // ---------------------------------------------------------
@@ -108,6 +111,9 @@ Matrix matrix_tanh(Matrix *mat);
 
 double matrix_mse(Matrix *mat_a, Matrix *mat_b);
 void matrix_standardize(Matrix *mat);
+double matrix_euclidian_distance(Matrix* a, Matrix*b);
+int matrix_unique(Matrix *mat);
+
 
 // ---------------------------------------------------------
 // ---------------------------------------------------------

@@ -1,4 +1,4 @@
-#include "./src/linear_regression/linear_regression.h"
+#include "./linear_regression.h"
 
 int main()
 {
@@ -6,7 +6,7 @@ int main()
     double LR = 1e-3;
     int EPOCHS = 1e4;
 
-    Matrix df = csv_read("data/housing.csv", true);
+    Matrix df = csv_read("dummy.csv", true);
     matrix_print(&df);
     // printf("%d", (int)(TEST_SIZE * df.rows));
 
@@ -36,7 +36,6 @@ int main()
     LinearRegression model = lr_create(X_train.cols);
     lr_fit(&model, &X_train, &y_train, LR, EPOCHS);
 
-    printf("Model weights : \n");
     matrix_print(&model.weights);
-    printf("Model bias : %f\n", model.bias);
+    printf("%f\n", model.bias);
 }

@@ -22,15 +22,12 @@ void lr_fit(LinearRegression *model, Matrix *X, Matrix *y, double lr, int epochs
     // y_train = label (m x 1)
 
     Matrix X_transpose = matrix_transpose(X);
+    double y_mean = matrix_mean(y);
     Matrix dot, dot_error, y_pred, error, grad, grad_lr;
 
     for (int i = 0; i < epochs; i++)
     {
-        // Dot product from the features and weight
-        dot = matrix_dot(X, &(model->weights)); // (m x n) . (n x 1) => (m x 1)
-
-        // Add the result with the bias
-        y_pred = matrix_add_scalar(&dot, model->bias); // (m x 1) + bias => (m x 1)
+        y_pred = lr_predict(model, X);
 
         // Calculate the error
         error = matrix_sub(&y_pred, y); // (m x 1) - (m x 1) => (m x 1)
@@ -46,21 +43,31 @@ void lr_fit(LinearRegression *model, Matrix *X, Matrix *y, double lr, int epochs
         model->weights = updated_weights;
 
         // Update bias
-        // model->bias -= lr * matrix_mean(&error);
+        model->bias -= lr * matrix_mean(&error);
 
-        printf("Epoch %d, Loss: %f\n", i, matrix_mse(&y_pred, y));
+        printf("Epoch %d, Loss: %f\n", i + 1, matrix_mse(&y_pred, y)/(y->rows));
         // matrix_print(&y_pred);
 
         // Free all memory
-        matrix_free(&dot);
         matrix_free(&dot_error);
         matrix_free(&grad_lr);
-        matrix_free(&y_pred);
         matrix_free(&error);
+        matrix_free(&y_pred);
         matrix_free(&grad);
     }
 }
 
 Matrix lr_predict(LinearRegression *model, Matrix *X)
 {
+    Matrix dot, y_pred;
+
+    // Dot product from the features and weight
+    dot = matrix_dot(X, &(model->weights)); // (m x n) . (n x 1) => (m x 1)
+
+    // Add the result with the bias
+    y_pred = matrix_add_scalar(&dot, model->bias); // (m x 1) + bias => (m x 1)
+
+    matrix_free(&dot);
+
+    return y_pred;
 }

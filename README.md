@@ -7,7 +7,7 @@ Welcome to **Machine Learning From Scratch**, a collection of machine learning a
 | Model               | Description                          | Status      |
 |--------------------|--------------------------------------|-------------|
 | 🧮 Linear Regression | Predict continuous values            | ✅ Completed |
-| 📍 K-Nearest Neighbors | Classification via proximity       | 🚧 In Progress |
+| 📍 K-Nearest Neighbors | Classification via proximity       | ✅ Completed |
 | 📐 Support Vector Machine | Max-margin classifier           | 🚧 In Progress |
 | 🌳 Decision Tree     | Rule-based classification/regression | 🧪 Planned    |
 

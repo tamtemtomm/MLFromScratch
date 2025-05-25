@@ -5,7 +5,7 @@
 int main(void)
 {
     Matrix mat = matrix_create(3, 2);
-    double values[] = {1, 2, 3, 4, 5, 6};
+    double values[] = {1, 1, 1, 1, 5, 6};
     matrix_set_data(&mat, values);
 
     Matrix mat_2 = matrix_create(2, 1);
@@ -60,6 +60,14 @@ int main(void)
     // Matrix mat_hstack = matrix_hstack(&mat, &mat_2);
     // printf("mat_hstack : \n");
     // matrix_print(&mat_hstack);
+
+    printf("%d\n", matrix_unique(&mat));
+
+    Matrix mat_3 = matrix_create(3, 2);
+    double values_3[] = {1, 8, 1, 1, 5, 6};
+    matrix_set_data(&mat_3, values_3);
+
+    printf("%f\n", matrix_euclidian_distance(&mat, &mat_3));
 
     matrix_free(&mat);
     matrix_free(&mat_2);
