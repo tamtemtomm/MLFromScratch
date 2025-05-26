@@ -4,21 +4,21 @@
 
 int main(void)
 {
-    Matrix mat = matrix_create(3, 2);
+    Matrix* mat = matrix_create(3, 2);
     double values[] = {1, 1, 1, 1, 5, 6};
-    matrix_set_data(&mat, values);
+    matrix_set_data(mat, values);
 
-    Matrix mat_2 = matrix_create(2, 1);
+    Matrix* mat_2 = matrix_create(2, 1);
     double values_2[] = {5, 6,};
-    matrix_set_data(&mat_2, values_2);
+    matrix_set_data(mat_2, values_2);
 
     printf("mat : \n");
-    matrix_print(&mat);
+    matrix_print(mat);
     printf("mat 2 : \n");
-    matrix_print(&mat_2);
+    matrix_print(mat_2);
 
-    Matrix mat_dot = matrix_dot(&mat, &mat_2);
-    matrix_print(&mat_dot);
+    Matrix* mat_dot = matrix_dot(mat, mat_2);
+    matrix_print(mat_dot);
 
     // Matrix mat_random = matrix_random(2, 3);
     // printf("mat random : \n");
@@ -61,16 +61,16 @@ int main(void)
     // printf("mat_hstack : \n");
     // matrix_print(&mat_hstack);
 
-    printf("%d\n", matrix_unique(&mat));
+    printf("%d\n", matrix_unique(mat));
 
-    Matrix mat_3 = matrix_create(3, 2);
+    Matrix* mat_3 = matrix_create(3, 2);
     double values_3[] = {1, 8, 1, 1, 5, 6};
-    matrix_set_data(&mat_3, values_3);
+    matrix_set_data(mat_3, values_3);
 
-    printf("%f\n", matrix_euclidian_distance(&mat, &mat_3));
+    printf("%f\n", matrix_euclidian_distance(mat, mat_3));
 
-    matrix_free(&mat);
-    matrix_free(&mat_2);
+    matrix_free(mat);
+    matrix_free(mat_2);
 
     return 0;
 }

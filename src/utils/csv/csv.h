@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include "./../cnumpy/cnumpy.h"
 
-Matrix csv_read(const char *filename, bool header);
+Matrix* csv_read(const char *filename, bool header);
 void csv_write(const char *filename, Matrix *mat);
 void _csv_inspect_dimension(const char *filename, int *rows, int *cols);
 

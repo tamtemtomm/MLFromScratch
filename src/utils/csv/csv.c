@@ -1,6 +1,6 @@
 #include "csv.h"
 
-Matrix csv_read(const char *filename, bool header)
+Matrix* csv_read(const char *filename, bool header)
 {
     int rows, cols;
     _csv_inspect_dimension(filename, &rows, &cols);
@@ -9,7 +9,7 @@ Matrix csv_read(const char *filename, bool header)
         rows--;
 
     FILE *file = fopen(filename, "r");
-    Matrix new_mat = matrix_create(rows, cols);
+    Matrix* new_mat = matrix_create(rows, cols);
     char line[1024];
     int r = 0, c = 0;
 
@@ -23,7 +23,7 @@ Matrix csv_read(const char *filename, bool header)
         c = 0;
         while (token)
         {
-            matrix_set(&new_mat, r, c, atof(token));
+            matrix_set(new_mat, r, c, atof(token));
             token = strtok(NULL, ",");
             c++;
         }

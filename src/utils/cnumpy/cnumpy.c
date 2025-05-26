@@ -1,6 +1,5 @@
 #include "cnumpy.h"
 
-
 // MATRIX ERROR
 // ---------------------------------------------------------
 void matrix_dimension_mismatch(Matrix *mat_a, Matrix *mat_b)
@@ -12,43 +11,61 @@ void matrix_dimension_mismatch(Matrix *mat_a, Matrix *mat_b)
 // MATRIX INITIALIZATION
 // ---------------------------------------------------------
 
-Matrix matrix_create(int rows, int cols)
+Matrix *matrix_create(int rows, int cols)
 {
-    Matrix mat;
-    mat.rows = rows;
-    mat.cols = cols;
-    mat.data = (double *)calloc(rows * cols, sizeof(double));
+    Matrix *mat = (Matrix *)malloc(sizeof(Matrix));
+    if (mat == NULL)
+        return NULL;
+
+    mat->rows = rows;
+    mat->cols = cols;
+    mat->data = (double *)calloc(rows * cols, sizeof(double));
+
+    if (mat->data == NULL)
+    {
+        free(mat);
+        return NULL;
+    }
 
     return mat;
 }
-Matrix matrix_copy(Matrix *mat)
+Matrix *matrix_copy(Matrix *mat)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j));
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j));
         }
     }
 
     return new_mat;
 }
-Matrix matrix_identity(int size)
+Matrix *matrix_identity(int size)
 {
-    Matrix new_mat = matrix_create(size, size);
-    matrix_fill(&new_mat, 1);
+    Matrix *new_mat = matrix_create(size, size);
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            if (i == j)
+                matrix_set(new_mat, i, j, 1.0);
+            else
+                matrix_set(new_mat, i, j, 0.0);
+        }
+    }
 
     return new_mat;
 }
-Matrix matrix_zeros(int rows, int cols)
+Matrix *matrix_zeros(int rows, int cols)
 {
-    Matrix new_mat = matrix_create(rows, cols);
-    matrix_fill(&new_mat, 0);
+    Matrix *new_mat = matrix_create(rows, cols);
+    matrix_fill(new_mat, 0);
 
     return new_mat;
 }
-Matrix matrix_random(int rows, int cols)
+Matrix *matrix_random(int rows, int cols)
 {
     static int seeded = 0;
     if (!seeded)
@@ -57,13 +74,13 @@ Matrix matrix_random(int rows, int cols)
         seeded = 1;
     }
 
-    Matrix new_mat = matrix_create(rows, cols);
+    Matrix *new_mat = matrix_create(rows, cols);
 
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
-            matrix_set(&new_mat, i, j, (double)rand() / RAND_MAX);
+            matrix_set(new_mat, i, j, (double)rand() / RAND_MAX);
         }
     }
 
@@ -107,18 +124,21 @@ double matrix_max(Matrix *mat)
     return max;
 }
 
-int* matrix_max_idx(Matrix *mat){
+int *matrix_max_idx(Matrix *mat)
+{
     double max = -INFINITY;
     double cur_value;
     int *res = malloc(2 * sizeof(int));
     res[0] = 0;
     res[1] = 0;
 
-
-    for (int i = 0; i < mat->rows; i++){
-        for (int j = 0; j < mat->cols; j++){
+    for (int i = 0; i < mat->rows; i++)
+    {
+        for (int j = 0; j < mat->cols; j++)
+        {
             cur_value = matrix_get_row_col(mat, i, j);
-            if (cur_value > max){
+            if (cur_value > max)
+            {
                 max = cur_value;
                 res[0] = i;
                 res[1] = j;
@@ -147,17 +167,21 @@ double matrix_min(Matrix *mat)
     return min;
 }
 
-int * matrix_min_idx(Matrix *mat){
+int *matrix_min_idx(Matrix *mat)
+{
     double min = INFINITY;
     double cur_value;
     int *res = malloc(2 * sizeof(int));
     res[0] = 0;
     res[1] = 0;
 
-    for (int i = 0; i < mat->rows; i++){
-        for (int j = 0; j < mat->cols; j++){
+    for (int i = 0; i < mat->rows; i++)
+    {
+        for (int j = 0; j < mat->cols; j++)
+        {
             cur_value = matrix_get_row_col(mat, i, j);
-            if( cur_value < min){
+            if (cur_value < min)
+            {
                 min = cur_value;
                 res[0] = i;
                 res[1] = j;
@@ -211,7 +235,7 @@ double matrix_get_row_col(Matrix *mat, int row, int col)
 
     return mat->data[row * mat->cols + col];
 }
-Matrix matrix_get_row(Matrix *mat, int row)
+Matrix *matrix_get_row(Matrix *mat, int row)
 {
     if (row < 0 || row >= mat->rows)
     {
@@ -219,16 +243,16 @@ Matrix matrix_get_row(Matrix *mat, int row)
         exit(EXIT_FAILURE);
     }
 
-    Matrix row_matrix = matrix_create(1, mat->cols);
+    Matrix *row_matrix = matrix_create(1, mat->cols);
 
     for (int col = 0; col < mat->cols; col++)
     {
-        row_matrix.data[col] = mat->data[row * mat->cols + col];
+        row_matrix->data[col] = mat->data[row * mat->cols + col];
     }
 
     return row_matrix;
 }
-Matrix matrix_get_col(Matrix *mat, int col)
+Matrix *matrix_get_col(Matrix *mat, int col)
 {
     if (col < 0 || col >= mat->cols)
     {
@@ -236,11 +260,11 @@ Matrix matrix_get_col(Matrix *mat, int col)
         exit(EXIT_FAILURE);
     }
 
-    Matrix col_matrix = matrix_create(mat->rows, 1);
+    Matrix *col_matrix = matrix_create(mat->rows, 1);
 
     for (int row = 0; row < mat->rows; row++)
     {
-        col_matrix.data[row] = mat->data[row * mat->cols + col];
+        col_matrix->data[row] = mat->data[row * mat->cols + col];
     }
 
     return col_matrix;
@@ -262,8 +286,7 @@ double matrix_sum(Matrix *mat)
 }
 double matrix_mean(Matrix *mat)
 {
-    double sum = matrix_sum(mat);
-    return sum / (mat->rows * mat->cols);
+    return matrix_sum(mat) / (mat->rows * mat->cols);
 }
 double matrix_var(Matrix *mat)
 {
@@ -300,23 +323,23 @@ double matrix_norm(Matrix *mat)
 
     return sqrt(sum);
 }
-Matrix matrix_transpose(Matrix *mat)
+Matrix *matrix_transpose(Matrix *mat)
 {
-    Matrix mat_new = matrix_create(mat->cols, mat->rows);
+    Matrix *mat_new = matrix_create(mat->cols, mat->rows);
     double value;
 
-    for (int i = 0; i < mat_new.rows; i++)
+    for (int i = 0; i < mat_new->rows; i++)
     {
-        for (int j = 0; j < mat_new.cols; j++)
+        for (int j = 0; j < mat_new->cols; j++)
         {
             value = matrix_get_row_col(mat, j, i);
-            matrix_set(&mat_new, i, j, value);
+            matrix_set(mat_new, i, j, value);
         }
     }
 
     return mat_new;
 }
-Matrix matrix_slice(Matrix *mat, int row_start, int row_end, int col_start, int col_end)
+Matrix *matrix_slice(Matrix *mat, int row_start, int row_end, int col_start, int col_end)
 {
     if (row_start < 0 || row_end > mat->rows || col_start < 0 || col_end > mat->cols || row_start >= row_end || col_start >= col_end)
     {
@@ -327,14 +350,13 @@ Matrix matrix_slice(Matrix *mat, int row_start, int row_end, int col_start, int 
     int new_rows = row_end - row_start;
     int new_cols = col_end - col_start;
 
-    Matrix submat = matrix_create(new_rows, new_cols);
+    Matrix *submat = matrix_create(new_rows, new_cols);
 
     for (int i = 0; i < new_rows; i++)
     {
         for (int j = 0; j < new_cols; j++)
         {
-            double value = matrix_get_row_col(mat, row_start + i, col_start + j);
-            matrix_set(&submat, i, j, value);
+            matrix_set(submat, i, j, matrix_get_row_col(mat, row_start + i, col_start + j));
         }
     }
 
@@ -343,53 +365,53 @@ Matrix matrix_slice(Matrix *mat, int row_start, int row_end, int col_start, int 
 
 // MATRIX SCALAR OPERATION
 // ---------------------------------------------------------
-Matrix matrix_add_scalar(Matrix *mat, double scalar)
+Matrix *matrix_add_scalar(Matrix *mat, double scalar)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) + scalar);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) + scalar);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_sub_scalar(Matrix *mat, double scalar)
+Matrix *matrix_sub_scalar(Matrix *mat, double scalar)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) - scalar);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) - scalar);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_mult_scalar(Matrix *mat, double scalar)
+Matrix *matrix_mult_scalar(Matrix *mat, double scalar)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) * scalar);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) * scalar);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_div_scalar(Matrix *mat, double scalar)
+Matrix *matrix_div_scalar(Matrix *mat, double scalar)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) / scalar);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) / scalar);
         }
     }
 
@@ -399,7 +421,7 @@ Matrix matrix_div_scalar(Matrix *mat, double scalar)
 // MATRIX MATRIX OPERATION
 // ---------------------------------------------------------
 
-Matrix matrix_add(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_add(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
@@ -408,98 +430,94 @@ Matrix matrix_add(Matrix *mat_a, Matrix *mat_b)
 
     matrix_dimension_mismatch(mat_a, mat_b);
 
-    double add_value;
-    Matrix new_mat = matrix_create(mat_a->rows, mat_b->cols);
-    for (int i = 0; i < new_mat.rows; i++)
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_b->cols);
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
-            add_value = matrix_get_row_col(mat_a, i, j) + matrix_get_row_col(mat_b, i, j);
-            matrix_set(&new_mat, i, j, add_value);
+            matrix_set(new_mat, i, j,
+                       matrix_get_row_col(mat_a, i, j) + matrix_get_row_col(mat_b, i, j));
         }
     }
 
     return new_mat;
 }
-Matrix matrix_sub(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_sub(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    double sub_value;
-    Matrix new_mat = matrix_create(mat_a->rows, mat_b->cols);
-    for (int i = 0; i < new_mat.rows; i++)
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_b->cols);
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
-            sub_value = matrix_get_row_col(mat_a, i, j) - matrix_get_row_col(mat_b, i, j);
-            matrix_set(&new_mat, i, j, sub_value);
+            matrix_set(new_mat, i, j,
+                       matrix_get_row_col(mat_a, i, j) - matrix_get_row_col(mat_b, i, j));
         }
     }
 
     return new_mat;
 }
-Matrix matrix_mult(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_mult(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    double mul_value;
-    Matrix new_mat = matrix_create(mat_a->rows, mat_b->cols);
-    for (int i = 0; i < new_mat.rows; i++)
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_b->cols);
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
-            mul_value = matrix_get_row_col(mat_a, i, j) * matrix_get_row_col(mat_b, i, j);
-            matrix_set(&new_mat, i, j, mul_value);
+            matrix_set(new_mat, i, j,
+                       matrix_get_row_col(mat_a, i, j) * matrix_get_row_col(mat_b, i, j));
         }
     }
 
     return new_mat;
 }
-Matrix matrix_div(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_div(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    double mul_value;
-    Matrix mat_new = matrix_create(mat_a->rows, mat_b->cols);
+    Matrix *mat_new = matrix_create(mat_a->rows, mat_b->cols);
     for (int i = 0; i < mat_a->rows; i++)
     {
         for (int j = 0; j < mat_a->cols; j++)
         {
-            mul_value = matrix_get_row_col(mat_a, i, j) / matrix_get_row_col(mat_b, i, j);
-            matrix_set(&mat_new, i, j, mul_value);
+            matrix_set(mat_new, i, j,
+                       matrix_get_row_col(mat_a, i, j) / matrix_get_row_col(mat_b, i, j));
         }
     }
 
     return mat_new;
 }
-Matrix matrix_dot(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_dot(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->cols != mat_b->rows)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    Matrix new_mat = matrix_create(mat_a->rows, mat_b->cols);
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_b->cols);
 
     for (int i = 0; i < mat_a->rows; i++)
     {
         for (int j = 0; j < mat_b->cols; j++)
         {
             double sum = 0.0;
-            for (int k = 0; k < mat_a->cols; k++) 
+            for (int k = 0; k < mat_a->cols; k++)
             {
                 sum += matrix_get_row_col(mat_a, i, k) * matrix_get_row_col(mat_b, k, j);
             }
-            matrix_set(&new_mat, i, j, sum);
+            matrix_set(new_mat, i, j, sum);
         }
     }
 
@@ -509,9 +527,9 @@ Matrix matrix_dot(Matrix *mat_a, Matrix *mat_b)
 // MATRIX ACTIVATION OPERATION
 // ---------------------------------------------------------
 
-Matrix matrix_relu(Matrix *mat)
+Matrix *matrix_relu(Matrix *mat)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     double value, new_value = 0;
 
     for (int i = 0; i < mat->rows; i++)
@@ -520,31 +538,31 @@ Matrix matrix_relu(Matrix *mat)
         {
             value = matrix_get_row_col(mat, i, j);
             new_value = value > 0 ? value : 0;
-            matrix_set(&new_mat, i, j, new_value);
+            matrix_set(new_mat, i, j, new_value);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_sigmoid(Matrix *mat)
+Matrix *matrix_sigmoid(Matrix *mat)
 {
 
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j,
+            matrix_set(new_mat, i, j,
                        1 / (1 + pow(EULER_NUMBER, -matrix_get_row_col(mat, i, j))));
         }
-    }   
+    }
 
     return new_mat;
 }
-Matrix matrix_tanh(Matrix *mat)
+Matrix *matrix_tanh(Matrix *mat)
 {
 
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
     double value, tanh_value;
 
     for (int i = 0; i < mat->rows; i++)
@@ -555,7 +573,7 @@ Matrix matrix_tanh(Matrix *mat)
             tanh_value = (pow(EULER_NUMBER, value) - pow(EULER_NUMBER, -value)) /
                          (pow(EULER_NUMBER, value) + pow(EULER_NUMBER, -value));
 
-            matrix_set(&new_mat, i, j, tanh_value);
+            matrix_set(new_mat, i, j, tanh_value);
         }
     }
 
@@ -565,106 +583,102 @@ Matrix matrix_tanh(Matrix *mat)
 // MATRIX LOGICAL OPERATION
 // ---------------------------------------------------------
 
-Matrix matrix_equal(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_equal(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    Matrix new_mat = matrix_create(mat_a->rows, mat_a->cols);
-    double value;
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_a->cols);
 
-    for (int i = 0; i < new_mat.rows; i++)
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
-            value = matrix_get_row_col(mat_a, i, j) == matrix_get_row_col(mat_b, i, j) ? 1 : 0;
-            matrix_set(&new_mat, i, j, value);
+            matrix_set(new_mat, i, j,
+                       matrix_get_row_col(mat_a, i, j) == matrix_get_row_col(mat_b, i, j) ? 1 : 0);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_greater(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_greater(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    Matrix new_mat = matrix_create(mat_a->rows, mat_a->cols);
-    double value;
-
-    for (int i = 0; i < new_mat.rows; i++)
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_a->cols);
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
-            value = matrix_get_row_col(mat_a, i, j) > matrix_get_row_col(mat_b, i, j) ? 1 : 0;
-            matrix_set(&new_mat, i, j, value);
+            matrix_set(new_mat, i, j,
+                       matrix_get_row_col(mat_a, i, j) > matrix_get_row_col(mat_b, i, j) ? 1 : 0);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_lower(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_lower(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows || mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    Matrix new_mat = matrix_create(mat_a->rows, mat_a->cols);
-    double value;
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_a->cols);
 
-    for (int i = 0; i < new_mat.rows; i++)
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
-            value = matrix_get_row_col(mat_a, i, j) < matrix_get_row_col(mat_b, i, j) ? 1 : 0;
-            matrix_set(&new_mat, i, j, value);
+            matrix_set(new_mat, i, j,
+                       matrix_get_row_col(mat_a, i, j) < matrix_get_row_col(mat_b, i, j) ? 1 : 0);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_equal_scalar(Matrix *mat, double value)
+Matrix *matrix_equal_scalar(Matrix *mat, double value)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
 
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) == value ? 1 : 0);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) == value ? 1 : 0);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_greater_scalar(Matrix *mat, double value)
+Matrix *matrix_greater_scalar(Matrix *mat, double value)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
 
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) > value ? 1 : 0);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) > value ? 1 : 0);
         }
     }
 
     return new_mat;
 }
-Matrix matrix_lower_scalar(Matrix *mat, double value)
+Matrix *matrix_lower_scalar(Matrix *mat, double value)
 {
-    Matrix new_mat = matrix_create(mat->rows, mat->cols);
+    Matrix *new_mat = matrix_create(mat->rows, mat->cols);
 
     for (int i = 0; i < mat->rows; i++)
     {
         for (int j = 0; j < mat->cols; j++)
         {
-            matrix_set(&new_mat, i, j, matrix_get_row_col(mat, i, j) < value ? 1 : 0);
+            matrix_set(new_mat, i, j, matrix_get_row_col(mat, i, j) < value ? 1 : 0);
         }
     }
 
@@ -673,45 +687,45 @@ Matrix matrix_lower_scalar(Matrix *mat, double value)
 
 // MATRIX LOGICAL OPERATION
 // ---------------------------------------------------------
-Matrix matrix_hstack(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_hstack(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->rows != mat_b->rows)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    Matrix new_mat = matrix_create(mat_a->rows, mat_a->cols + mat_b->cols);
+    Matrix *new_mat = matrix_create(mat_a->rows, mat_a->cols + mat_b->cols);
 
-    for (int i = 0; i < new_mat.rows; i++)
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
             if (j < mat_a->cols)
-                matrix_set(&new_mat, i, j, matrix_get_row_col(mat_a, i, j));
+                matrix_set(new_mat, i, j, matrix_get_row_col(mat_a, i, j));
             else
-                matrix_set(&new_mat, i, j, matrix_get_row_col(mat_b, i, j - mat_a->cols));
+                matrix_set(new_mat, i, j, matrix_get_row_col(mat_b, i, j - mat_a->cols));
         }
     }
 
     return new_mat;
 }
-Matrix matrix_vstack(Matrix *mat_a, Matrix *mat_b)
+Matrix *matrix_vstack(Matrix *mat_a, Matrix *mat_b)
 {
     if (mat_a->cols != mat_b->cols)
     {
         matrix_dimension_mismatch(mat_a, mat_b);
     }
 
-    Matrix new_mat = matrix_create(mat_a->rows + mat_b->rows, mat_a->cols);
+    Matrix *new_mat = matrix_create(mat_a->rows + mat_b->rows, mat_a->cols);
 
-    for (int i = 0; i < new_mat.rows; i++)
+    for (int i = 0; i < new_mat->rows; i++)
     {
-        for (int j = 0; j < new_mat.cols; j++)
+        for (int j = 0; j < new_mat->cols; j++)
         {
             if (i < mat_a->rows)
-                matrix_set(&new_mat, i, j, matrix_get_row_col(mat_a, i, j));
+                matrix_set(new_mat, i, j, matrix_get_row_col(mat_a, i, j));
             else
-                matrix_set(&new_mat, i, j, matrix_get_row_col(mat_b, i - mat_a->rows, j));
+                matrix_set(new_mat, i, j, matrix_get_row_col(mat_b, i - mat_a->rows, j));
         }
     }
 
@@ -720,7 +734,7 @@ Matrix matrix_vstack(Matrix *mat_a, Matrix *mat_b)
 
 // MATRIX RESHAPE OPERATION
 // ---------------------------------------------------------
-Matrix matrix_reshape(Matrix *mat, int new_rows, int new_cols)
+Matrix *matrix_reshape(Matrix *mat, int new_rows, int new_cols)
 {
     if (mat->rows * mat->cols != new_rows * new_cols)
     {
@@ -729,12 +743,12 @@ Matrix matrix_reshape(Matrix *mat, int new_rows, int new_cols)
         exit(EXIT_FAILURE);
     }
 
-    Matrix new_mat = matrix_create(new_rows, new_cols);
+    Matrix *new_mat = matrix_create(new_rows, new_cols);
     int size = new_rows * new_cols;
 
     for (int i = 0; i < size; i++)
     {
-        new_mat.data[i] = mat->data[i];
+        new_mat->data[i] = mat->data[i];
     }
 
     return new_mat;
@@ -805,16 +819,19 @@ void matrix_standardize(Matrix *mat)
 
 // MATRIX DISTANCE OPERATION
 // ---------------------------------------------------------
-double matrix_euclidian_distance(Matrix* a, Matrix*b){
+double matrix_euclidian_distance(Matrix *a, Matrix *b)
+{
     double sum = 0.0;
     if (a->rows != b->rows || a->cols != b->cols)
     {
         matrix_dimension_mismatch(a, b);
     }
 
-    for (int i = 0; i < a->rows; i++){
-        for (int j = 0; j < a->cols; j++){
-            double diff = matrix_get_row_col(a, i, j) - matrix_get_row_col(b , i, j);
+    for (int i = 0; i < a->rows; i++)
+    {
+        for (int j = 0; j < a->cols; j++)
+        {
+            double diff = matrix_get_row_col(a, i, j) - matrix_get_row_col(b, i, j);
             sum += diff * diff;
         }
     }
@@ -822,29 +839,37 @@ double matrix_euclidian_distance(Matrix* a, Matrix*b){
     return sqrt(sum);
 }
 
-bool is_close(double a, double b){
+bool is_close(double a, double b)
+{
     return fabs(a - b) < 1e-9;
 }
 
-int matrix_unique(Matrix *mat) {
+int matrix_unique(Matrix *mat)
+{
     int count = 0;
     int capacity = 16;
     double *seen = malloc(capacity * sizeof(double));
 
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
+    for (int i = 0; i < mat->rows; i++)
+    {
+        for (int j = 0; j < mat->cols; j++)
+        {
             double val = matrix_get_row_col(mat, i, j);
             bool found = false;
 
-            for (int k = 0; k < count; k++) {
-                if (is_close(val, seen[k])) {
+            for (int k = 0; k < count; k++)
+            {
+                if (is_close(val, seen[k]))
+                {
                     found = true;
                     break;
                 }
             }
 
-            if (!found) {
-                if (count >= capacity) {
+            if (!found)
+            {
+                if (count >= capacity)
+                {
                     capacity *= 2;
                     seen = realloc(seen, capacity * sizeof(double));
                 }

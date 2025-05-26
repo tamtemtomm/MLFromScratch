@@ -21,11 +21,11 @@ typedef struct
 // MATRIX INITIALIZATION
 // ---------------------------------------------------------
 
-Matrix matrix_create(int rows, int cols);
-Matrix matrix_copy(Matrix *mat);
-Matrix matrix_identity(int size);
-Matrix matrix_zeros(int rows, int cols);
-Matrix matrix_random(int rows, int cols);
+Matrix* matrix_create(int rows, int cols);
+Matrix* matrix_copy(Matrix *mat);
+Matrix* matrix_identity(int size);
+Matrix* matrix_zeros(int rows, int cols);
+Matrix* matrix_random(int rows, int cols);
 
 // MATRIX ATTRIBUTES
 // ---------------------------------------------------------
@@ -48,8 +48,8 @@ void matrix_fill(Matrix *mat, double value);
 // ---------------------------------------------------------
 
 double matrix_get_row_col(Matrix *mat, int row, int col);
-Matrix matrix_get_row(Matrix *mat, int row);
-Matrix matrix_get_col(Matrix *mat, int col);
+Matrix* matrix_get_row(Matrix *mat, int row);
+Matrix* matrix_get_col(Matrix *mat, int col);
 
 // MATRIX SELF OPERATION
 // ---------------------------------------------------------
@@ -59,51 +59,51 @@ double matrix_mean(Matrix *mat);
 double matrix_var(Matrix *mat);
 double matrix_std(Matrix *mat);
 double matrix_norm(Matrix *mat);
-Matrix matrix_transpose(Matrix *mat);
-Matrix matrix_slice(Matrix *mat, int row_start, int row_end, int col_start, int col_end);
+Matrix* matrix_transpose(Matrix *mat);
+Matrix* matrix_slice(Matrix *mat, int row_start, int row_end, int col_start, int col_end);
 
 // MATRIX SCALAR OPERATION
 // ---------------------------------------------------------
 
-Matrix matrix_add_scalar(Matrix *mat, double scalar);
-Matrix matrix_sub_scalar(Matrix *mat, double scalar);
-Matrix matrix_mult_scalar(Matrix *mat, double scalar);
-Matrix matrix_div_scalar(Matrix *mat, double scalar);
+Matrix* matrix_add_scalar(Matrix *mat, double scalar);
+Matrix* matrix_sub_scalar(Matrix *mat, double scalar);
+Matrix* matrix_mult_scalar(Matrix *mat, double scalar);
+Matrix* matrix_div_scalar(Matrix *mat, double scalar);
 
 // MATRIX MATRIX OPERATION
 // ---------------------------------------------------------
 
-Matrix matrix_add(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_sub(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_mult(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_div(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_dot(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_add(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_sub(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_mult(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_div(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_dot(Matrix *mat_a, Matrix *mat_b);
 
 // MATRIX LOGICAL OPERATION
 // ---------------------------------------------------------
-Matrix matrix_equal(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_greater(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_lower(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_equal_scalar(Matrix *mat, double value);
-Matrix matrix_greater_scalar(Matrix *mat_a, double value);
-Matrix matrix_lower_scalar(Matrix *mat_a, double value);
+Matrix* matrix_equal(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_greater(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_lower(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_equal_scalar(Matrix *mat, double value);
+Matrix* matrix_greater_scalar(Matrix *mat_a, double value);
+Matrix* matrix_lower_scalar(Matrix *mat_a, double value);
 
 // MATRIX LOGICAL OPERATION
 // ---------------------------------------------------------
-Matrix matrix_hstack(Matrix *mat_a, Matrix *mat_b);
-Matrix matrix_vstack(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_hstack(Matrix *mat_a, Matrix *mat_b);
+Matrix* matrix_vstack(Matrix *mat_a, Matrix *mat_b);
 
 // MATRIX RESHAPE OPERATION
 // ---------------------------------------------------------
-Matrix matrix_reshape(Matrix *mat, int new_rows, int new_cols);
+Matrix* matrix_reshape(Matrix *mat, int new_rows, int new_cols);
 double *matrix_flatten(Matrix *mat);
 
 // MATRIX ACTIVATION OPERATION
 // ---------------------------------------------------------
 
-Matrix matrix_relu(Matrix *mat);
-Matrix matrix_sigmoid(Matrix *mat);
-Matrix matrix_tanh(Matrix *mat);
+Matrix* matrix_relu(Matrix *mat);
+Matrix* matrix_sigmoid(Matrix *mat);
+Matrix* matrix_tanh(Matrix *mat);
 
 
 // MATRIX LOSS OPERATION
